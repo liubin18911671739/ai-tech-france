@@ -74,7 +74,7 @@ class BatchRelationExtractor:
                 
                 for doc in batch:
                     doc_id = doc.get("doc_id", "")
-                    text = doc.get("text", "")
+                    text = doc.get("content") or doc.get("text", "")
                     
                     if not text:
                         continue
@@ -124,7 +124,7 @@ class BatchRelationExtractor:
                     try:
                         obj = json.loads(line.strip())
                         doc_id = obj.get("doc_id", "")
-                        corpus[doc_id] = obj.get("text", "")
+                        corpus[doc_id] = obj.get("content") or obj.get("text", "")
                     except:
                         continue
         

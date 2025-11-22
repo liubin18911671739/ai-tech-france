@@ -40,14 +40,21 @@
 - **相关性标注**: 250+条分级标注 (0-3级) ✅
 - **自动化**: 批量评测 + LaTeX表格生成 ✅
 
-### 4. 自适应学习支持 ⚪ 未实现 (Future Work)
-- **学习画像**: 日志分析 + 概念掌握度估计 (规划中)
-- **路径推荐**: 基于prerequisite拓扑排序 (规划中)
-- **RAG练习生成**: 检索增强的练习题生成 (规划中)
+### 4. 自适应学习支持 ✅ 已实现 (Step 10)
+- **学习画像**: BKT掌握度模型 + 事件追踪 + 偏好分析 ✅
+- **路径推荐**: 基于prerequisite拓扑排序的学习路径生成 ✅
+- **Pilot分析**: 完整的学习者分析报告系统 ✅
+- **RAG练习生成**: 检索增强的练习题生成 ⚪ (Future Work)
 
-### 5. 交互界面 ✅ 部分实现
-- **Streamlit UI**: 跨语种检索 + 图谱可视化 ✅ (已完成)
-- **FastAPI**: RESTful API服务 ⚪ (规划中,非必需)
+### 5. 消融实验 ✅ 已实现 (论文增强)
+- **7种配置**: Dense-only/Sparse-only/KG-only/组合/Full ✅
+- **自动评测**: nDCG@10/MRR/Recall@50 批量计算 ✅
+- **LaTeX生成**: 论文直接可用的表格 ✅
+- **详细分析**: 组件贡献度和互补性分析 ✅
+
+### 6. 交互界面 ✅ 部分实现
+- **Streamlit UI**: 跨语种检索 + 图谱可视化 ✅ (基础界面完成)
+- **FastAPI**: RESTful API服务 ⚪ (可选,非必需)
 
 ## 📁 项目结构
 
@@ -115,6 +122,21 @@ python -m spacy download en_core_web_sm
 # 验证安装
 python -c "import torch; import transformers; print('✅ 环境就绪!')"
 ```
+
+### ⚡️ MVP一键体验
+
+无需准备Neo4j或大规模语料,可以直接使用仓库内置的迷你数据集快速验证端到端能力:
+
+```bash
+python scripts/mvp_pipeline.py --run-eval
+```
+
+脚本会自动：
+
+1. 构建 `artifacts/faiss_labse` 与 `artifacts/whoosh_bm25` 索引(使用轻量级Hashing编码器)
+2. 读取 `data/kg/nodes.jsonl` 和 `data/kg/relations.jsonl` 作为本地KG, 无需Neo4j服务
+3. 运行 `data/eval/clir_queries.jsonl` 中的示例查询并打印融合结果
+4. (可选 `--run-eval`) 触发评测管线,输出 nDCG/MRR/Recall 摘要
 
 ### 2. Neo4j 启动
 

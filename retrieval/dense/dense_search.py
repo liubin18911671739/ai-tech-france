@@ -190,7 +190,7 @@ class DenseSearcher:
         """获取索引统计信息"""
         if not self.index_builder:
             return {}
-        
+
         stats = {
             "index_type": self.index_builder.metadata.get("index_type"),
             "num_docs": self.index_builder.index.ntotal,
@@ -198,8 +198,17 @@ class DenseSearcher:
             "model": self.index_builder.metadata.get("model"),
             "corpus_loaded": len(self.corpus_map)
         }
-        
+
         return stats
+
+    def close(self):
+        """释放资源"""
+        encoder_close = getattr(self.encoder, "close", None)
+        if callable(encoder_close):
+            try:
+                encoder_close()
+            except Exception as exc:
+                logger.debug(f"关闭编码器失败: {exc}")
 
 
 def main():

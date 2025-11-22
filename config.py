@@ -18,6 +18,7 @@ class Config(BaseSettings):
     PARALLEL_DIR: Path = DATA_DIR / "parallel"
     SEEDS_DIR: Path = DATA_DIR / "seeds"
     EVAL_DIR: Path = DATA_DIR / "eval"
+    KG_DATA_DIR: Path = DATA_DIR / "kg"
     
     KG_DIR: Path = PROJECT_ROOT / "kg"
     RETRIEVAL_DIR: Path = PROJECT_ROOT / "retrieval"
@@ -101,6 +102,7 @@ class Config(BaseSettings):
         dirs = [
             self.DATA_DIR, self.RAW_DIR, self.CLEANED_DIR,
             self.PARALLEL_DIR, self.SEEDS_DIR, self.EVAL_DIR,
+            self.KG_DATA_DIR,
             self.MODELS_DIR, self.FAISS_INDEX_DIR, 
             self.WHOOSH_INDEX_DIR, self.ALIGNMENT_DIR
         ]

@@ -1,0 +1,9 @@
+{"id": "concept_grammar_fr", "name": "grammaire française", "lang": "fr", "type": "CONCEPT", "properties": {"category": "grammar"}}
+{"id": "concept_grammar_zh", "name": "法语语法", "lang": "zh", "type": "CONCEPT", "properties": {"category": "grammar"}}
+{"id": "concept_grammar_en", "name": "French grammar", "lang": "en", "type": "CONCEPT", "properties": {"category": "grammar"}}
+{"id": "concept_conjugation_fr", "name": "conjugaison des verbes", "lang": "fr", "type": "CONCEPT", "properties": {"category": "grammar"}}
+{"id": "concept_conjugation_zh", "name": "动词变位", "lang": "zh", "type": "CONCEPT", "properties": {"category": "grammar"}}
+{"id": "concept_conjugation_en", "name": "verb conjugation", "lang": "en", "type": "CONCEPT", "properties": {"category": "grammar"}}
+{"id": "concept_dl_fr", "name": "apprentissage profond", "lang": "fr", "type": "CONCEPT", "properties": {"category": "ai"}}
+{"id": "concept_dl_zh", "name": "深度学习", "lang": "zh", "type": "CONCEPT", "properties": {"category": "ai"}}
+{"id": "concept_dl_en", "name": "deep learning", "lang": "en", "type": "CONCEPT", "properties": {"category": "ai"}}

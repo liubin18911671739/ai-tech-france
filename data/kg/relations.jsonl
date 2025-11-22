@@ -1,0 +1,13 @@
+{"source": "concept_grammar_fr", "target": "concept_conjugation_fr", "type": "PREREQUISITE", "properties": {"weight": 0.9}}
+{"source": "concept_grammar_en", "target": "concept_conjugation_en", "type": "PREREQUISITE", "properties": {"weight": 0.9}}
+{"source": "concept_grammar_zh", "target": "concept_conjugation_zh", "type": "PREREQUISITE", "properties": {"weight": 0.9}}
+{"source": "concept_grammar_fr", "target": "concept_grammar_en", "type": "EQUIVALENT", "properties": {"weight": 1.0}}
+{"source": "concept_grammar_fr", "target": "concept_grammar_zh", "type": "EQUIVALENT", "properties": {"weight": 1.0}}
+{"source": "concept_grammar_en", "target": "concept_grammar_zh", "type": "EQUIVALENT", "properties": {"weight": 1.0}}
+{"source": "concept_conjugation_fr", "target": "concept_conjugation_en", "type": "EQUIVALENT", "properties": {"weight": 0.95}}
+{"source": "concept_conjugation_fr", "target": "concept_conjugation_zh", "type": "EQUIVALENT", "properties": {"weight": 0.95}}
+{"source": "concept_dl_fr", "target": "concept_dl_en", "type": "EQUIVALENT", "properties": {"weight": 0.95}}
+{"source": "concept_dl_fr", "target": "concept_dl_zh", "type": "EQUIVALENT", "properties": {"weight": 0.95}}
+{"source": "concept_dl_en", "target": "concept_dl_zh", "type": "EQUIVALENT", "properties": {"weight": 0.95}}
+{"source": "concept_dl_fr", "target": "concept_grammar_fr", "type": "RELATED_TO", "properties": {"weight": 0.4}}
+{"source": "concept_dl_en", "target": "concept_grammar_en", "type": "RELATED_TO", "properties": {"weight": 0.4}}

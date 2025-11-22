@@ -6,7 +6,7 @@
 """
 import json
 from pathlib import Path
-from typing import List, Dict, Optional, Tuple
+from typing import List, Dict, Optional, Tuple, Union
 from collections import defaultdict
 import sys
 
@@ -309,7 +309,40 @@ class FusionReranker:
                     item["title"] = doc.get("title", "")
                     item["content"] = doc.get("content", "")
                     item["lang"] = doc.get("lang", "")
-        
+
+        return fused
+
+    def rerank(
+        self,
+        dense_results: List[Dict] = None,
+        sparse_results: List[Dict] = None,
+        kg_results: Union[Dict[str, float], List[Dict]] = None,
+        top_k: int = None,
+        method: str = "weighted_sum",
+        corpus: Dict[str, Dict] = None
+    ) -> List[Dict]:
+        """统一的rerank入口,兼容list/dict格式的KG结果"""
+        if isinstance(kg_results, list):
+            kg_scores = {item["doc_id"]: item.get("score", 0.0) for item in kg_results}
+        else:
+            kg_scores = kg_results or {}
+
+        fused = self.rerank_with_details(
+            dense_results or [],
+            sparse_results or [],
+            kg_scores,
+            corpus=corpus,
+            top_k=top_k
+        )
+
+        # 保留得分贡献,便于Explain
+        for item in fused:
+            item["score_contributions"] = {
+                "dense": item.get("dense_score", 0.0),
+                "sparse": item.get("sparse_score", 0.0),
+                "kg": item.get("kg_score", 0.0)
+            }
+
         return fused
     
     def explain_fusion(self, doc_id: str, fused_result: Dict) -> Dict:

@@ -108,7 +108,7 @@ class EntityExtractor:
                 
                 for doc in batch:
                     doc_id = doc.get("doc_id", "")
-                    text = doc.get("text", "")
+                    text = doc.get("content") or doc.get("text", "")
                     
                     if not text:
                         continue

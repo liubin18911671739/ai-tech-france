@@ -1,0 +1,13 @@
+{"source": "alphabet", "target": "pronunciation", "type": "PREREQUISITE", "weight": 1.0}
+{"source": "pronunciation", "target": "vocabulary_basic", "type": "PREREQUISITE", "weight": 1.0}
+{"source": "vocabulary_basic", "target": "grammar_basic", "type": "PREREQUISITE", "weight": 0.9}
+{"source": "grammar_basic", "target": "sentence_structure", "type": "PREREQUISITE", "weight": 1.0}
+{"source": "vocabulary_basic", "target": "vocabulary_advanced", "type": "PREREQUISITE", "weight": 0.8}
+{"source": "grammar_basic", "target": "grammar_advanced", "type": "PREREQUISITE", "weight": 0.9}
+{"source": "sentence_structure", "target": "reading_comprehension", "type": "PREREQUISITE", "weight": 0.8}
+{"source": "grammar_advanced", "target": "writing_composition", "type": "PREREQUISITE", "weight": 0.9}
+{"source": "vocabulary_advanced", "target": "writing_composition", "type": "PREREQUISITE", "weight": 0.7}
+{"source": "grammar_basic", "target": "verb_conjugation", "type": "PREREQUISITE", "weight": 0.9}
+{"source": "verb_conjugation", "target": "tense_usage", "type": "PREREQUISITE", "weight": 1.0}
+{"source": "grammar_basic", "target": "article_usage", "type": "PREREQUISITE", "weight": 0.8}
+{"source": "sentence_structure", "target": "complex_sentences", "type": "PREREQUISITE", "weight": 0.9}

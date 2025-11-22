@@ -17,6 +17,7 @@ from neo4j.exceptions import ServiceUnavailable
 
 from logger import get_logger
 from config import config
+from kg.local_graph import LocalGraphStore
 
 logger = get_logger(__name__)
 
@@ -49,6 +50,8 @@ class EntityLinker:
         self.similarity_threshold = similarity_threshold
         
         self.driver = None
+        self.local_store: Optional[LocalGraphStore] = None
+        self.kg_data_dir = config.KG_DATA_DIR
         self._connect()
     
     def _connect(self):
@@ -61,11 +64,23 @@ class EntityLinker:
             self.driver.verify_connectivity()
             logger.info(f"实体链接器连接Neo4j成功")
         except ServiceUnavailable:
-            logger.error("Neo4j服务不可用,实体链接功能将不可用")
+            logger.warning("Neo4j服务不可用,降级为本地知识图谱查询")
             self.driver = None
+            self._load_local_store()
         except Exception as e:
-            logger.error(f"Neo4j连接失败: {e}")
+            logger.warning(f"Neo4j连接失败: {e}, 使用本地知识图谱")
             self.driver = None
+            self._load_local_store()
+
+    def _load_local_store(self):
+        if self.local_store:
+            return
+        try:
+            self.local_store = LocalGraphStore(self.kg_data_dir)
+            logger.info("实体链接器已切换至本地知识图谱模式")
+        except FileNotFoundError as exc:
+            logger.warning(f"未找到本地知识图谱: {exc}")
+            self.local_store = None
     
     def close(self):
         """关闭连接"""
@@ -88,36 +103,38 @@ class EntityLinker:
         Returns:
             链接结果 [{"entity": ..., "kg_id": ..., "kg_name": ..., "confidence": ...}, ...]
         """
-        if not self.driver:
-            logger.warning("Neo4j未连接,返回空链接结果")
-            return []
-        
         if not entities:
             return []
-        
+
+        if not self.driver and not self.local_store:
+            logger.warning("无Neo4j或本地KG数据,返回空链接结果")
+            return []
+
         logger.info(f"开始链接实体: {len(entities)} 个")
-        
-        linked = []
-        
+
+        if self.driver:
+            return self._link_via_neo4j(entities, lang)
+
+        return self._link_locally(entities, lang)
+
+    def _link_via_neo4j(self, entities: List[Dict], lang: Optional[str]) -> List[Dict]:
+        linked: List[Dict] = []
+
         with self.driver.session(database=self.database) as session:
             for entity in entities:
                 entity_name = entity.get("entity", "")
                 entity_type = entity.get("type", "")
-                
+
                 if not entity_name:
                     continue
-                
-                # 尝试精确匹配
+
                 kg_nodes = self._exact_match(session, entity_name, entity_type, lang)
-                
-                # 如果精确匹配失败,尝试模糊匹配
+
                 if not kg_nodes:
                     kg_nodes = self._fuzzy_match(session, entity_name, entity_type, lang)
-                
-                # 选择最佳匹配
+
                 if kg_nodes:
-                    best_match = kg_nodes[0]  # 已按相似度排序
-                    
+                    best_match = kg_nodes[0]
                     linked.append({
                         "entity": entity_name,
                         "entity_type": entity_type,
@@ -126,10 +143,38 @@ class EntityLinker:
                         "kg_type": best_match["type"],
                         "confidence": best_match["confidence"]
                     })
-                else:
-                    logger.debug(f"实体未链接: {entity_name} ({entity_type})")
-        
+
         logger.info(f"实体链接完成: {len(linked)}/{len(entities)} 个成功")
+        return linked
+
+    def _link_locally(self, entities: List[Dict], lang: Optional[str]) -> List[Dict]:
+        linked: List[Dict] = []
+
+        for entity in entities:
+            entity_name = entity.get("entity", "")
+            entity_type = entity.get("type", "")
+            if not entity_name:
+                continue
+
+            candidates = self.local_store.search(
+                entity_name,
+                lang=lang,
+                entity_type=entity_type or None,
+                limit=3
+            ) if self.local_store else []
+
+            if candidates:
+                best_match = candidates[0]
+                linked.append({
+                    "entity": entity_name,
+                    "entity_type": entity_type,
+                    "kg_id": best_match["id"],
+                    "kg_name": best_match["name"],
+                    "kg_type": best_match["type"],
+                    "confidence": best_match["confidence"]
+                })
+
+        logger.info(f"实体链接完成(本地): {len(linked)}/{len(entities)} 个成功")
         return linked
     
     def _exact_match(

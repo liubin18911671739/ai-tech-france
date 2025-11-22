@@ -17,6 +17,7 @@ from neo4j.exceptions import ServiceUnavailable
 
 from logger import get_logger
 from config import config
+from kg.local_graph import LocalGraphStore
 
 logger = get_logger(__name__)
 
@@ -52,6 +53,8 @@ class HopExpander:
         self.max_neighbors = max_neighbors or config.KG_MAX_NEIGHBORS
         
         self.driver = None
+        self.local_store: Optional[LocalGraphStore] = None
+        self.kg_data_dir = config.KG_DATA_DIR
         self._connect()
     
     def _connect(self):
@@ -64,11 +67,23 @@ class HopExpander:
             self.driver.verify_connectivity()
             logger.info(f"N-hop扩展器连接Neo4j成功")
         except ServiceUnavailable:
-            logger.error("Neo4j服务不可用,图谱扩展功能将不可用")
+            logger.warning("Neo4j服务不可用,使用本地知识图谱扩展")
             self.driver = None
+            self._load_local_store()
         except Exception as e:
-            logger.error(f"Neo4j连接失败: {e}")
+            logger.warning(f"Neo4j连接失败: {e}, 使用本地知识图谱扩展")
             self.driver = None
+            self._load_local_store()
+
+    def _load_local_store(self):
+        if self.local_store:
+            return
+        try:
+            self.local_store = LocalGraphStore(self.kg_data_dir)
+            logger.info("N-hop扩展器已切换至本地知识图谱模式")
+        except FileNotFoundError as exc:
+            logger.warning(f"未找到本地知识图谱: {exc}")
+            self.local_store = None
     
     def close(self):
         """关闭连接"""
@@ -93,22 +108,28 @@ class HopExpander:
         Returns:
             扩展结果 {"nodes": [...], "edges": [...], "paths": [...]}
         """
-        if not self.driver:
-            logger.warning("Neo4j未连接,返回空扩展结果")
-            return {"nodes": [], "edges": [], "paths": []}
-        
         if not node_ids:
             return {"nodes": [], "edges": [], "paths": []}
-        
+
+        if not self.driver and not self.local_store:
+            logger.warning("无Neo4j或本地KG,返回空扩展结果")
+            return {"nodes": [], "edges": [], "paths": []}
+
         hops = hops or self.max_hops
-        
+
         logger.info(f"开始{hops}-hop扩展: {len(node_ids)} 个起始节点")
-        
+
+        if self.driver:
+            return self._expand_via_neo4j(node_ids, hops, relation_types)
+
+        return self._expand_locally(node_ids, hops, relation_types)
+
+    def _expand_via_neo4j(self, node_ids: List[str], hops: int, relation_types: Optional[List[str]]):
         # 使用BFS进行逐层扩展
         all_nodes = {}  # {node_id: node_data}
         all_edges = []
         all_paths = []
-        
+
         visited = set(node_ids)
         current_layer = node_ids
         
@@ -179,9 +200,103 @@ class HopExpander:
             "edges": all_edges,
             "paths": all_paths
         }
-        
+
         logger.info(f"扩展完成: {len(result['nodes'])} 个节点, {len(result['edges'])} 条边, {len(result['paths'])} 条路径")
         return result
+
+    def _expand_locally(self, node_ids: List[str], hops: int, relation_types: Optional[List[str]]):
+        if not self.local_store:
+            return {"nodes": [], "edges": [], "paths": []}
+
+        all_nodes = {}
+        all_edges = []
+        all_paths = []
+
+        visited = set(node_ids)
+        current_layer = list(node_ids)
+
+        for node_id in node_ids:
+            node = self.local_store.get_node(node_id)
+            if node:
+                all_nodes[node_id] = node
+
+        for hop in range(1, hops + 1):
+            logger.info(f"[Local] 扩展第 {hop} 层, 当前节点数: {len(current_layer)}")
+            next_layer = set()
+
+            for node_id in current_layer:
+                neighbors = self.local_store.neighbors(
+                    node_id,
+                    limit=self.max_neighbors,
+                    relation_types=relation_types
+                )
+
+                for neighbor in neighbors:
+                    target_id = neighbor["target_id"]
+                    edge = {
+                        "source": node_id,
+                        "target": target_id,
+                        "relation": neighbor["relation"],
+                        "weight": neighbor.get("weight", 1.0),
+                        "hop": hop
+                    }
+                    all_edges.append(edge)
+
+                    path = {
+                        "start": node_ids[0],
+                        "end": target_id,
+                        "length": hop,
+                        "relations": [neighbor["relation"]],
+                        "weights": [neighbor.get("weight", 1.0)],
+                        "node_ids": [node_id, target_id]
+                    }
+                    all_paths.append(path)
+
+                    if target_id not in visited:
+                        visited.add(target_id)
+                        next_layer.add(target_id)
+                        node_data = self.local_store.get_node(target_id)
+                        if node_data:
+                            all_nodes[target_id] = node_data
+
+            current_layer = list(next_layer)
+            if not current_layer:
+                break
+
+        return {
+            "nodes": list(all_nodes.values()),
+            "edges": all_edges,
+            "paths": all_paths
+        }
+
+    def expand_multi_entities(
+        self,
+        entity_ids: List[str],
+        max_hops: Optional[int] = None,
+        relation_types: Optional[List[str]] = None
+    ) -> Dict:
+        """对多个实体同时进行扩展并合并结果"""
+        if not entity_ids:
+            return {"nodes": [], "edges": [], "paths": []}
+
+        combined = {"nodes": [], "edges": [], "paths": []}
+        seen_nodes = {}
+
+        for entity_id in entity_ids:
+            expanded = self.expand_from_nodes(
+                node_ids=[entity_id],
+                hops=max_hops,
+                relation_types=relation_types
+            )
+
+            for node in expanded.get("nodes", []):
+                seen_nodes[node["id"]] = node
+
+            combined["edges"].extend(expanded.get("edges", []))
+            combined["paths"].extend(expanded.get("paths", []))
+
+        combined["nodes"] = list(seen_nodes.values())
+        return combined
     
     def _get_node(self, session, node_id: str) -> Optional[Dict]:
         """获取节点信息"""

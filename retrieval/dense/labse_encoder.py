@@ -7,11 +7,40 @@ LaBSE 编码器 - 跨语言向量表示
 import numpy as np
 import torch
 from typing import List, Union
-from sentence_transformers import SentenceTransformer
+try:
+    from sentence_transformers import SentenceTransformer
+except Exception:  # pragma: no cover - fallback when transformers unavailable
+    SentenceTransformer = None
+
+from sklearn.feature_extraction.text import HashingVectorizer
+
 from logger import get_logger
 from config import config
 
 logger = get_logger(__name__)
+
+
+class HashingSentenceEncoder:
+    """轻量级Hashing编码器,用于无GPU/离线环境"""
+
+    def __init__(self, n_features: int = 512):
+        self.n_features = n_features
+        self.vectorizer = HashingVectorizer(
+            n_features=self.n_features,
+            alternate_sign=False,
+            norm="l2"
+        )
+
+    def encode(self, texts: List[str]) -> np.ndarray:
+        matrix = self.vectorizer.transform(texts)
+        return matrix.toarray().astype(np.float32)
+
+    def encode_corpus(self, corpus: List[dict], text_field: str = "content") -> np.ndarray:
+        texts = [doc.get(text_field, "") for doc in corpus]
+        return self.encode(texts)
+
+    def close(self):  # pragma: no cover - nothing to release
+        return
 
 
 class LaBSEEncoder:
@@ -28,11 +57,28 @@ class LaBSEEncoder:
         self.model_name = model_name or config.LABSE_MODEL
         self.device = device or ("cuda" if torch.cuda.is_available() else "cpu")
         
-        logger.info(f"加载LaBSE模型: {self.model_name}")
-        self.model = SentenceTransformer(self.model_name, device=self.device)
-        
+        self.model = None
+        self.fallback_encoder = None
+
+        if SentenceTransformer is not None:
+            try:
+                logger.info(f"加载LaBSE模型: {self.model_name}")
+                self.model = SentenceTransformer(self.model_name, device=self.device)
+                self.embedding_dim = self.model.get_sentence_embedding_dimension()
+                logger.info(
+                    f"LaBSE加载完成, 维度: {self.embedding_dim}, 设备: {self.device}"
+                )
+            except Exception as exc:
+                logger.warning(f"加载LaBSE失败({exc}), 使用Hashing编码器作为替代")
+                self._init_fallback()
+        else:  # sentence_transformers不可用
+            logger.warning("sentence-transformers 未安装, 使用Hashing编码器")
+            self._init_fallback()
+
+    def _init_fallback(self):
+        self.fallback_encoder = HashingSentenceEncoder(n_features=config.EMBEDDING_DIM)
         self.embedding_dim = config.EMBEDDING_DIM
-        logger.info(f"LaBSE加载完成, 维度: {self.embedding_dim}, 设备: {self.device}")
+        self.model_name = "hashing-vectorizer"
     
     def encode(
         self,
@@ -54,14 +100,18 @@ class LaBSEEncoder:
         if isinstance(texts, str):
             texts = [texts]
         
-        # 批量编码
-        embeddings = self.model.encode(
-            texts,
-            batch_size=batch_size,
-            show_progress_bar=False,
-            convert_to_numpy=True,
-            normalize_embeddings=normalize
-        )
+        if self.model:
+            embeddings = self.model.encode(
+                texts,
+                batch_size=batch_size,
+                show_progress_bar=False,
+                convert_to_numpy=True,
+                normalize_embeddings=normalize
+            )
+        elif self.fallback_encoder:
+            embeddings = self.fallback_encoder.encode(texts)
+        else:
+            raise RuntimeError("编码器未初始化")
         
         return embeddings
     
@@ -87,10 +137,17 @@ class LaBSEEncoder:
         texts = [doc.get(text_field, "") for doc in corpus]
         
         embeddings = self.encode(texts, batch_size=batch_size)
-        
+
         logger.info(f"编码完成: shape={embeddings.shape}")
-        
+
         return embeddings
+
+    def close(self):  # pragma: no cover - release torch model
+        if self.model and hasattr(self.model, "cpu"):
+            try:
+                self.model.to("cpu")
+            except Exception:
+                pass
     
     def similarity(
         self,

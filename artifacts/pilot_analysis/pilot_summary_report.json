@@ -1,0 +1,50 @@
+{
+  "analysis_date": "2025-11-22T15:21:38.610589",
+  "total_learners": 3,
+  "statistics": {
+    "avg_concepts_studied": 8.0,
+    "avg_mastery_score": 0.3931755884522234,
+    "common_weak_concepts": [
+      {
+        "concept_id": "sentence_structure",
+        "learner_count": 3
+      },
+      {
+        "concept_id": "vocabulary_advanced",
+        "learner_count": 3
+      },
+      {
+        "concept_id": "alphabet",
+        "learner_count": 3
+      },
+      {
+        "concept_id": "pronunciation",
+        "learner_count": 3
+      },
+      {
+        "concept_id": "vocabulary_basic",
+        "learner_count": 3
+      }
+    ]
+  },
+  "individual_results": [
+    {
+      "learner_id": "learner_001",
+      "total_concepts": 8,
+      "avg_mastery": 0.39317558845086154,
+      "weak_concept_count": 5
+    },
+    {
+      "learner_id": "learner_002",
+      "total_concepts": 8,
+      "avg_mastery": 0.39317558845272227,
+      "weak_concept_count": 5
+    },
+    {
+      "learner_id": "learner_003",
+      "total_concepts": 8,
+      "avg_mastery": 0.3931755884530863,
+      "weak_concept_count": 5
+    }
+  ]
+}

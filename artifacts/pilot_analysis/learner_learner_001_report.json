@@ -1,0 +1,147 @@
+{
+  "learner_id": "learner_001",
+  "analysis_time": "2025-11-22T15:21:38.609276",
+  "profile_summary": {
+    "learner_id": "learner_001",
+    "summary": {
+      "total_concepts": 8,
+      "total_queries": 4,
+      "total_resources_viewed": 0,
+      "total_study_time_hours": 2.088888888888889,
+      "session_count": 0,
+      "last_active": "2025-11-13T15:21:38.609005"
+    },
+    "mastery_distribution": {
+      "learning": 4,
+      "familiar": 2,
+      "novice": 2
+    },
+    "weak_concepts": [
+      {
+        "concept_id": "sentence_structure",
+        "mastery": 0.14445374252230359
+      },
+      {
+        "concept_id": "vocabulary_advanced",
+        "mastery": 0.15164788027983866
+      },
+      {
+        "concept_id": "alphabet",
+        "mastery": 0.35430004458126635
+      },
+      {
+        "concept_id": "pronunciation",
+        "mastery": 0.39545449972184427
+      },
+      {
+        "concept_id": "vocabulary_basic",
+        "mastery": 0.4441995108643431
+      }
+    ],
+    "preferences": {
+      "preferred_languages": {
+        "zh": 2,
+        "en": 2
+      },
+      "active_hours": {
+        "15": 30
+      },
+      "learning_style": {
+        "practice_ratio": 0.7333333333333333,
+        "view_ratio": 0.26666666666666666
+      },
+      "total_concepts": 8,
+      "avg_study_time_per_concept": 940.0
+    },
+    "avg_mastery": 0.39317558845086154
+  },
+  "weak_concepts": [
+    {
+      "concept_id": "sentence_structure",
+      "mastery": 0.14445374252230359
+    },
+    {
+      "concept_id": "vocabulary_advanced",
+      "mastery": 0.15164788027983866
+    },
+    {
+      "concept_id": "alphabet",
+      "mastery": 0.35430004458126635
+    },
+    {
+      "concept_id": "pronunciation",
+      "mastery": 0.39545449972184427
+    },
+    {
+      "concept_id": "vocabulary_basic",
+      "mastery": 0.4441995108643431
+    }
+  ],
+  "recommended_path": [
+    {
+      "concept_id": "alphabet",
+      "current_mastery": 0.35430004458126635,
+      "step": 1,
+      "reason": "薄弱概念补强",
+      "prerequisites": []
+    },
+    {
+      "concept_id": "pronunciation",
+      "current_mastery": 0.39545449972184427,
+      "step": 2,
+      "reason": "薄弱概念补强",
+      "prerequisites": [
+        "alphabet"
+      ]
+    },
+    {
+      "concept_id": "vocabulary_basic",
+      "current_mastery": 0.4441995108643431,
+      "step": 3,
+      "reason": "薄弱概念补强",
+      "prerequisites": [
+        "pronunciation"
+      ]
+    },
+    {
+      "concept_id": "vocabulary_advanced",
+      "current_mastery": 0.15164788027983866,
+      "step": 4,
+      "reason": "薄弱概念补强",
+      "prerequisites": [
+        "vocabulary_basic"
+      ]
+    },
+    {
+      "concept_id": "grammar_basic",
+      "current_mastery": 0.4999027780525195,
+      "step": 5,
+      "reason": "薄弱概念补强",
+      "prerequisites": [
+        "vocabulary_basic"
+      ]
+    },
+    {
+      "concept_id": "sentence_structure",
+      "current_mastery": 0.14445374252230359,
+      "step": 6,
+      "reason": "薄弱概念补强",
+      "prerequisites": [
+        "grammar_basic"
+      ]
+    }
+  ],
+  "recommendations": {
+    "overall": [
+      "您已经掌握了一些基础知识，继续保持学习节奏"
+    ],
+    "study_tips": [
+      "练习很充足，可以适当增加理论学习和阅读",
+      "建议每周学习3-5小时，保持稳定的学习节奏"
+    ],
+    "next_steps": [
+      "建议下一步学习: alphabet (当前掌握度: 0.35)",
+      "后续计划: pronunciation → vocabulary_basic → vocabulary_advanced"
+    ]
+  }
+}

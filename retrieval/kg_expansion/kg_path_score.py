@@ -153,6 +153,10 @@ class KGPathScorer:
         Returns:
             添加了score字段的路径列表(按得分降序)
         """
+        if not paths:
+            logger.info("无路径可评分")
+            return []
+
         logger.info(f"开始评分: {len(paths)} 条路径")
         
         # 计算得分
@@ -162,7 +166,9 @@ class KGPathScorer:
         # 按得分降序排序
         paths.sort(key=lambda x: x["score"], reverse=True)
         
-        logger.info(f"评分完成, 最高分: {paths[0]['score']:.4f}, 最低分: {paths[-1]['score']:.4f}")
+        logger.info(
+            f"评分完成, 最高分: {paths[0]['score']:.4f}, 最低分: {paths[-1]['score']:.4f}"
+        )
         return paths
     
     def score_nodes_from_paths(
@@ -210,6 +216,47 @@ class KGPathScorer:
         
         logger.info(f"节点评分完成: {len(aggregated)} 个节点")
         return aggregated
+
+    def score_documents(
+        self,
+        query_entities: List[str],
+        expanded_graph: Dict,
+        corpus_map: Dict[str, Dict],
+        aggregation: str = "max"
+    ) -> List[Dict]:
+        """根据扩展路径与语料概念,返回文档级得分"""
+        paths = expanded_graph.get("paths", []) if expanded_graph else []
+        if not paths or not corpus_map:
+            return []
+
+        scored_paths = self.score_paths(paths)
+        node_scores = self.score_nodes_from_paths(scored_paths, aggregation=aggregation)
+
+        scored_documents = []
+        for doc_id, doc in corpus_map.items():
+            concepts = doc.get("concepts") or doc.get("concept_ids") or []
+            if not concepts:
+                continue
+            concept_scores = [node_scores.get(concept, 0.0) for concept in concepts]
+            kg_score = max(concept_scores) if concept_scores else 0.0
+            if kg_score <= 0:
+                continue
+            scored_documents.append({
+                "doc_id": doc_id,
+                "score": kg_score,
+                "score_contributions": {
+                    "kg": kg_score,
+                    "dense": 0.0,
+                    "sparse": 0.0
+                },
+                "title": doc.get("title", ""),
+                "content": doc.get("content", ""),
+                "lang": doc.get("lang", ""),
+                "concepts": concepts
+            })
+
+        scored_documents.sort(key=lambda x: x["score"], reverse=True)
+        return scored_documents
     
     def rerank_documents(
         self,
