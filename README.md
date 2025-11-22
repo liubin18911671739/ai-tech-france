@@ -2,13 +2,13 @@
 
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![MVP Progress](https://img.shields.io/badge/MVP-95%25-brightgreen)](https://github.com)
+[![MVP Progress](https://img.shields.io/badge/MVP-100%25-brightgreen)](https://github.com)
 [![Build Status](https://img.shields.io/badge/build-passing-success)](https://github.com)
 
 面向高校图书馆的跨语言法语学习知识服务系统,实现多语种知识图谱构建、KG增强跨语言检索(KG-CLIR)与自适应学习支持。
 
-**🎉 项目状态**: MVP核心功能95%完成,论文实验就绪!  
-**📊 核心模块**: Dense检索 ✅ | Sparse检索 ✅ | KG增强 ✅ | 融合排序 ✅ | 评测系统 ✅
+**🎉 项目状态**: MVP核心功能100%完成,论文实验就绪!  
+**📊 核心模块**: Dense检索 ✅ | Sparse检索 ✅ | KG增强 ✅ | 融合排序 ✅ | 评测系统 ✅ | 端到端脚本 ✅
 
 ## 🎯 核心功能
 
@@ -71,14 +71,26 @@ clir-french-mkg-lib/
 │   ├── kg_expansion/       # KG扩展
 │   ├── rerank/             # 融合重排
 │   └── eval/               # 检索评测
-├── adaptive/                # 自适应学习
-│   ├── learner_model/      # 学习者模型
-│   ├── path_reco/          # 路径推荐
-│   └── rag_tutor/          # RAG辅导
+├── adaptive/                # 自适应学习 (Step 10 ✅)
+│   ├── learner_model/      # 学习者模型 (BKT + Profile)
+│   ├── path_reco/          # 路径推荐 (Topological Sort)
+│   ├── ablation/           # 🆕 消融实验 (Ablation Study)
+│   ├── README.md           # 📚 完整使用说明
+│   └── rag_tutor/          # RAG辅导 (Future Work)
 ├── app/                     # 应用层
 │   ├── api/                # FastAPI
 │   └── ui/                 # Streamlit
 ├── scripts/                 # 执行脚本
+│   ├── 01_clean_corpus.py         # ✅ 语料清洗
+│   ├── 02_extract_entities.py     # ✅ 实体抽取
+│   ├── 03_extract_relations.py    # ✅ 关系抽取
+│   ├── 04_build_mkg.py            # ✅ 构建MKG
+│   ├── 05_train_alignment.py      # ✅ 训练对齐
+│   ├── 06_index_dense.py          # ✅ Dense索引
+│   ├── 07_index_sparse.py         # ✅ Sparse索引
+│   ├── 08_run_kg_clir.py          # ✅ 端到端集成 (NEW! 520行)
+│   ├── 09_eval_clir.py            # ✅ CLIR评测
+│   └── 10_run_pilot_analysis.py   # ✅ 学习分析 (NEW!)
 ├── config.py               # 全局配置
 ├── logger.py               # 日志管理
 └── requirements.txt        # 依赖
@@ -159,8 +171,21 @@ python scripts/06_index_dense.py --corpus-dir data/cleaned --output artifacts/fa
 # ✅ Step 7: 构建Sparse索引 (BM25)
 python scripts/07_index_sparse.py --corpus-dir data/cleaned --output artifacts/whoosh_bm25
 
-# ⏳ Step 8: 运行端到端检索 (待实现,可手动调用模块)
-# python scripts/08_run_kg_clir.py --query "grammaire française" --lang fr --top-k 10
+# ✅ Step 8: 运行端到端检索 (NEW! 完整实现)
+# 单个查询示例
+python scripts/08_run_kg_clir.py \
+  --query "法语语法学习" \
+  --lang zh \
+  --top-k 10 \
+  --dense-index artifacts/faiss_labse \
+  --sparse-index artifacts/whoosh_bm25 \
+  --use-kg
+
+# 批量查询示例
+python scripts/08_run_kg_clir.py \
+  --queries-file data/eval/clir_queries.jsonl \
+  --top-k 10 \
+  --output artifacts/search_results.json
 
 # ✅ Step 9: 运行完整评测 (生成论文结果!)
 python scripts/09_eval_clir.py \
@@ -173,13 +198,34 @@ python scripts/09_eval_clir.py \
   --use-kg \
   --top-k 100
 
-# ⚪ Step 10: 学习分析 (Future Work)
-# python scripts/10_run_pilot_analysis.py
+# ✅ Step 10: 学习分析 (NEW! 完整实现)
+python scripts/10_run_pilot_analysis.py \
+  --learner-ids learner_001 learner_002 learner_003 \
+  --output-dir artifacts/pilot_analysis
+
+# ✅ Step 10: 学习分析 (NEW! 完整实现)
+python scripts/10_run_pilot_analysis.py \
+  --learner-ids learner_001 learner_002 learner_003 \
+  --output-dir artifacts/pilot_analysis
+
+# 详细使用说明: adaptive/README.md
+
+# 🆕 消融实验 (Ablation Study - 可选，增强论文)
+python adaptive/ablation/run_ablation.py \
+  --queries data/eval/clir_queries.jsonl \
+  --qrels data/eval/qrels.tsv \
+  --output-dir artifacts/ablation_results
+
+# 自动评测7种配置，生成LaTeX表格
+# 详细说明: adaptive/ablation/README.md
 ```
 
-**✅ 当前可运行**: Steps 1-7, 9 (共8个脚本)  
-**⏳ 待实现**: Step 8 (端到端集成脚本,1-2小时)  
-**⚪ Future Work**: Step 10 (自适应学习分析)
+**✅ 当前可运行**: Steps 1-10 + 消融实验 (全部完成!)  
+**🎊 重大里程碑**: MVP 100%完成 + 论文增强功能就绪!  
+**🎓 NEW**: 
+- ✅ Step 8 端到端检索系统 - 整合Dense+Sparse+KG三路检索
+- ✅ Step 10 自适应学习分析 - BKT掌握度评估 + 学习路径推荐
+- ✅ 消融实验系统 - 7种配置对比 + LaTeX表格生成
 
 ### 5. 启动服务
 
@@ -244,6 +290,18 @@ Score(q, d) = α·sim_dense(q, d) + β·BM25(q, d) + γ·PathScore(q, d, KG)
 ```python
 PathScore = Σ (1 / depth^λ) · node_importance(n) · edge_weight(e)
 ```
+
+### 🆕 BKT 掌握度评估 (Step 10)
+
+```python
+# 贝叶斯知识追踪
+P(mastery|correct) = P(mastery) × P(correct|mastered) / P(correct)
+
+# 时间衰减
+P(t) = P₀ × exp(-λt) + P_init × (1 - exp(-λt))
+```
+
+**详细说明**: 见 [`adaptive/README.md`](adaptive/README.md)
 
 ## 📝 数据格式
 

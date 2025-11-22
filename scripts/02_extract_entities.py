@@ -14,8 +14,8 @@ PROJECT_ROOT = Path(__file__).parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
 from logger import get_logger
-from kg.extraction.fr_ner import FrenchNER
-from kg.extraction.zh_ner import ChineseNER
+from kg.extraction.ner_fr import FrenchNER
+from kg.extraction.ner_zh import ChineseNER
 
 logger = get_logger(__name__)
 
