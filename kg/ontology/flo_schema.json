@@ -1,0 +1,90 @@
+{
+  "ontology_name": "FLO",
+  "version": "1.0",
+  "description": "French Learning Ontology for multilingual knowledge graph",
+  "languages": ["fr", "zh", "en"],
+  
+  "entity_types": [
+    {
+      "type": "Concept",
+      "description": "学习概念",
+      "properties": ["name", "lang", "definition", "difficulty_level"],
+      "examples": ["grammaire", "verbe", "syntaxe"]
+    },
+    {
+      "type": "Resource",
+      "description": "学习资源",
+      "properties": ["title", "content", "lang", "type", "url"],
+      "examples": ["教材", "练习", "视频"]
+    },
+    {
+      "type": "Exercise",
+      "description": "练习题",
+      "properties": ["question", "answer", "difficulty", "concept_ids"],
+      "examples": ["填空题", "选择题"]
+    },
+    {
+      "type": "Learner",
+      "description": "学习者",
+      "properties": ["learner_id", "level", "native_lang"],
+      "examples": []
+    }
+  ],
+  
+  "relation_types": [
+    {
+      "relation": "prerequisite",
+      "source": "Concept",
+      "target": "Concept",
+      "description": "前置知识关系",
+      "properties": ["strength"],
+      "examples": ["alphabet -> syllable", "词汇 -> 语法"]
+    },
+    {
+      "relation": "related_to",
+      "source": "Concept",
+      "target": "Concept",
+      "description": "相关概念",
+      "properties": ["similarity"],
+      "examples": ["grammaire <-> syntaxe"]
+    },
+    {
+      "relation": "has_resource",
+      "source": "Concept",
+      "target": "Resource",
+      "description": "概念关联的学习资源",
+      "properties": [],
+      "examples": ["语法 -> 教材_001"]
+    },
+    {
+      "relation": "has_exercise",
+      "source": "Concept",
+      "target": "Exercise",
+      "description": "概念对应的练习",
+      "properties": [],
+      "examples": ["动词 -> 练习_045"]
+    },
+    {
+      "relation": "aligned_with",
+      "source": "Concept",
+      "target": "Concept",
+      "description": "跨语言对齐",
+      "properties": ["confidence", "alignment_type"],
+      "examples": ["语法(zh) <-> grammaire(fr)"]
+    },
+    {
+      "relation": "mastered",
+      "source": "Learner",
+      "target": "Concept",
+      "description": "学习者掌握的概念",
+      "properties": ["mastery_level", "last_practiced"],
+      "examples": []
+    }
+  ],
+  
+  "constraints": [
+    "prerequisite 不能形成环",
+    "aligned_with 必须连接不同语言的实体",
+    "difficulty_level: beginner|intermediate|advanced"
+  ]
+}

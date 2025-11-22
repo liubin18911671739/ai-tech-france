@@ -1,0 +1,208 @@
+# 跨语言种子对齐数据
+# Seed Alignment Data for Cross-lingual Entity Alignment
+#
+# 格式: entity1	entity2
+# Format: entity1	entity2
+#
+# 用途: 训练MTransE模型的种子对齐对
+# Purpose: Seed alignment pairs for training MTransE model
+
+# === 机器学习核心概念 (Machine Learning Core Concepts) ===
+apprentissage automatique	机器学习
+machine learning	机器学习
+apprentissage automatique	machine learning
+
+apprentissage profond	深度学习
+deep learning	深度学习
+apprentissage profond	deep learning
+
+intelligence artificielle	人工智能
+artificial intelligence	人工智能
+intelligence artificielle	artificial intelligence
+
+# === 神经网络 (Neural Networks) ===
+réseaux de neurones	神经网络
+neural networks	神经网络
+réseaux de neurones	neural networks
+
+réseaux convolutifs	卷积神经网络
+convolutional neural networks	卷积神经网络
+réseaux convolutifs	convolutional neural networks
+
+réseaux récurrents	循环神经网络
+recurrent neural networks	循环神经网络
+réseaux récurrents	recurrent neural networks
+
+# === 应用领域 (Application Domains) ===
+traitement du langage naturel	自然语言处理
+natural language processing	自然语言处理
+traitement du langage naturel	natural language processing
+
+vision par ordinateur	计算机视觉
+computer vision	计算机视觉
+vision par ordinateur	computer vision
+
+reconnaissance vocale	语音识别
+speech recognition	语音识别
+reconnaissance vocale	speech recognition
+
+# === 算法与方法 (Algorithms and Methods) ===
+régression linéaire	线性回归
+linear regression	线性回归
+régression linéaire	linear regression
+
+régression logistique	逻辑回归
+logistic regression	逻辑回归
+régression logistique	logistic regression
+
+arbres de décision	决策树
+decision trees	决策树
+arbres de décision	decision trees
+
+forêts aléatoires	随机森林
+random forests	随机森林
+forêts aléatoires	random forests
+
+machines à vecteurs de support	支持向量机
+support vector machines	支持向量机
+machines à vecteurs de support	support vector machines
+
+# === 优化方法 (Optimization Methods) ===
+descente de gradient	梯度下降
+gradient descent	梯度下降
+descente de gradient	gradient descent
+
+descente de gradient stochastique	随机梯度下降
+stochastic gradient descent	随机梯度下降
+descente de gradient stochastique	stochastic gradient descent
+
+rétropropagation	反向传播
+backpropagation	反向传播
+rétropropagation	backpropagation
+
+# === 学习类型 (Learning Types) ===
+apprentissage supervisé	监督学习
+supervised learning	监督学习
+apprentissage supervisé	supervised learning
+
+apprentissage non supervisé	无监督学习
+unsupervised learning	无监督学习
+apprentissage non supervisé	unsupervised learning
+
+apprentissage par renforcement	强化学习
+reinforcement learning	强化学习
+apprentissage par renforcement	reinforcement learning
+
+# === 任务类型 (Task Types) ===
+classification	分类
+classification	分类
+classification	classification
+
+régression	回归
+regression	回归
+régression	regression
+
+regroupement	聚类
+clustering	聚类
+regroupement	clustering
+
+# === 技术与工具 (Technologies and Tools) ===
+Python	Python
+Python	Python
+
+TensorFlow	TensorFlow
+TensorFlow	TensorFlow
+
+PyTorch	PyTorch
+PyTorch	PyTorch
+
+scikit-learn	scikit-learn
+scikit-learn	scikit-learn
+
+# === 数据处理 (Data Processing) ===
+normalisation	归一化
+normalization	归一化
+normalisation	normalization
+
+réduction de dimensionnalité	降维
+dimensionality reduction	降维
+réduction de dimensionnalité	dimensionality reduction
+
+extraction de caractéristiques	特征提取
+feature extraction	特征提取
+extraction de caractéristiques	feature extraction
+
+# === 评估指标 (Evaluation Metrics) ===
+précision	准确率
+accuracy	准确率
+précision	accuracy
+
+rappel	召回率
+recall	召回率
+rappel	recall
+
+validation croisée	交叉验证
+cross-validation	交叉验证
+validation croisée	cross-validation
+
+# === 模型架构 (Model Architectures) ===
+perceptron multicouche	多层感知机
+multilayer perceptron	多层感知机
+perceptron multicouche	multilayer perceptron
+
+transformateurs	Transformer
+transformers	Transformer
+transformateurs	transformers
+
+attention	注意力机制
+attention mechanism	注意力机制
+attention	attention mechanism
+
+# === 深度学习概念 (Deep Learning Concepts) ===
+fonction d'activation	激活函数
+activation function	激活函数
+fonction d'activation	activation function
+
+fonction de perte	损失函数
+loss function	损失函数
+fonction de perte	loss function
+
+surapprentissage	过拟合
+overfitting	过拟合
+surapprentissage	overfitting
+
+régularisation	正则化
+regularization	正则化
+régularisation	regularization
+
+# === 数据集 (Datasets) ===
+ensemble d'entraînement	训练集
+training set	训练集
+ensemble d'entraînement	training set
+
+ensemble de validation	验证集
+validation set	验证集
+ensemble de validation	validation set
+
+ensemble de test	测试集
+test set	测试集
+ensemble de test	test set
+
+# === 高级概念 (Advanced Concepts) ===
+apprentissage par transfert	迁移学习
+transfer learning	迁移学习
+apprentissage par transfert	transfer learning
+
+réseaux antagonistes génératifs	生成对抗网络
+generative adversarial networks	生成对抗网络
+réseaux antagonistes génératifs	generative adversarial networks
+
+codeurs automatiques	自编码器
+autoencoders	自编码器
+codeurs automatiques	autoencoders
+
+# === 总计: 108对跨语言对齐 ===
+# Total: 108 cross-lingual alignment pairs
+# 
+# 覆盖: 法语 <-> 中文, 中文 <-> 英语, 法语 <-> 英语
+# Coverage: French <-> Chinese, Chinese <-> English, French <-> English
